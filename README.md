@@ -20,7 +20,7 @@
 ## 安装
 
 ```
-composer require tangwei/dto
+composer require hashwallet/dto
 ```
 
 ## 使用
