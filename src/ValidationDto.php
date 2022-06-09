@@ -42,7 +42,13 @@ class ValidationDto
         $notSimplePropertyArr = PropertyManager::getPropertyAndNotSimpleType($className);
         foreach ($notSimplePropertyArr as $fieldName => $property) {
             if (! empty($data[$fieldName]) && !is_subclass_of($property->className, Enum::class)) {
-                $this->validateResolved($property->className, $data[$fieldName]);
+                if ($property->type === 'array') {
+                    foreach ($data[$fieldName] as $item) {
+                        $this->validateResolved($property->className, $item);
+                    }
+                } else {
+                    $this->validateResolved($property->className, $data[$fieldName]);
+                }
             }
         }
         $validArr = ValidationManager::getData($className);
