@@ -12,7 +12,9 @@ use Hyperf\DTO\Annotation\Contracts\RequestFormData;
 use Hyperf\DTO\Annotation\Contracts\RequestQuery;
 use Hyperf\DTO\Annotation\Contracts\Valid;
 use Hyperf\DTO\Annotation\Validation\BaseValidation;
+use Hyperf\DTO\Annotation\Validation\Integer;
 use Hyperf\DTO\Annotation\Validation\Required;
+use Hyperf\DTO\Annotation\Validation\Str;
 use Hyperf\DTO\ApiAnnotation;
 use Hyperf\DTO\Exception\DtoException;
 use Hyperf\Validation\Rules\In;
@@ -122,11 +124,23 @@ class ScanAnnotation extends JsonMapper
                 }
                 $propertyClassName = $arrType;
             }
-            if (! $this->isSimpleType($type)) {
-                $this->scanClass($type);
-                $isSimpleType = false;
-                $propertyClassName = $type;
-                PropertyManager::setNotSimpleClass($className);
+
+            $annotationArray = ApiAnnotation::getClassProperty($className, $fieldName);
+            if (!$this->isSimpleType($type)) {
+                switch (true) {
+                    case isset($annotationArray[Integer::class]):
+                        $type = 'integer';
+                        break;
+                    case isset($annotationArray[Str::class]):
+                        $type = 'string';
+                        break;
+                    default:
+                        $this->scanClass($type);
+                        $isSimpleType = false;
+                        $propertyClassName = $type;
+                        PropertyManager::setNotSimpleClass($className);
+                        break;
+                }
             }
             $property = new Property();
             $property->type = $type;
@@ -134,18 +148,17 @@ class ScanAnnotation extends JsonMapper
             $property->className = $propertyClassName ? trim($propertyClassName, '\\') : null;
             PropertyManager::setContent($className, $fieldName, $property);
 
-            $this->generateValidation($className, $fieldName, $property);
+            $this->generateValidation($className, $fieldName, $property, $annotationArray);
         }
     }
 
     /**
      * generateValidation.
      */
-    protected function generateValidation(string $className, string $fieldName, Property $property)
+    protected function generateValidation(string $className, string $fieldName, Property $property, array $annotationArray)
     {
         /** @var BaseValidation[] $validation */
         $validationArr = [];
-        $annotationArray = ApiAnnotation::getClassProperty($className, $fieldName);
 
         foreach ($annotationArray as $annotation) {
             if ($annotation instanceof BaseValidation) {
