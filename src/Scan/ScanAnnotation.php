@@ -12,6 +12,7 @@ use Hyperf\DTO\Annotation\Contracts\RequestFormData;
 use Hyperf\DTO\Annotation\Contracts\RequestQuery;
 use Hyperf\DTO\Annotation\Contracts\Valid;
 use Hyperf\DTO\Annotation\Validation\BaseValidation;
+use Hyperf\DTO\Annotation\Validation\Required;
 use Hyperf\DTO\ApiAnnotation;
 use Hyperf\DTO\Exception\DtoException;
 use Hyperf\Validation\Rules\In;
@@ -171,6 +172,9 @@ class ScanAnnotation extends JsonMapper
             ValidationManager::setRule($className, $fieldName, $ruleArray);
             foreach ($annotationArray as $annotation) {
                 if ($annotation instanceof ApiModelProperty && ! empty($annotation->value)) {
+                    if (!$annotation->required && isset($annotationArray[Required::class])) {
+                        $annotation->required = true;
+                    }
                     ValidationManager::setAttributes($className, $fieldName, $annotation->value);
                 }
             }
