@@ -114,7 +114,9 @@ class CoreMiddleware extends \Hyperf\HttpServer\CoreMiddleware
         }
 
         $class = new $className();
-        return $class->setStrict()->configure($class, $param);
+        $class->setStrict();
+        $class->configure($class, $param);
+        return $class;
     }
 
     protected function getPropertyValue(ServerRequestInterface $request, string $className, array $param): array
