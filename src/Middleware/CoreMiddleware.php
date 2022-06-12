@@ -113,7 +113,8 @@ class CoreMiddleware extends \Hyperf\HttpServer\CoreMiddleware
             $validationDTO->validate($className, $param);
         }
 
-        return new $className($param);
+        $class = new $className();
+        return $class->setStrict()->configure($class, $param);
     }
 
     protected function getPropertyValue(ServerRequestInterface $request, string $className, array $param): array
