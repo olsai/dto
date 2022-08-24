@@ -20,6 +20,7 @@ use InvalidArgumentException;
 use JsonMapper_Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Lengbin\Helper\YiiSoft\Arrays\ArrayHelper;
 use ReflectionClass;
 
 class CoreMiddleware extends \Hyperf\HttpServer\CoreMiddleware
@@ -115,7 +116,7 @@ class CoreMiddleware extends \Hyperf\HttpServer\CoreMiddleware
 
         $class = new $className();
         $class->setStrict();
-        $class->configure($class, $param);
+        $class->configure($class, array_merge(ArrayHelper::getObjectVars($class), $param));
         return $class;
     }
 
