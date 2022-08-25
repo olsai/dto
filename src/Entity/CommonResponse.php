@@ -9,7 +9,7 @@ use Lengbin\Common\BaseObject;
 class CommonResponse extends BaseObject
 {
     #[ApiModelProperty('状态码')]
-    public string $code = "0";
+    public int $code = 0;
 
     #[ApiModelProperty('信息')]
     public string $msg = "";
