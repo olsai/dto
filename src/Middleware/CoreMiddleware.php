@@ -139,7 +139,7 @@ class CoreMiddleware extends \Hyperf\HttpServer\CoreMiddleware
             }
 
             $type = $property->getType();
-            if (!$type->isBuiltin()) {
+            if ($type && !$type->isBuiltin()) {
                 $subParams = $param[$name] ?? [];
                 if (is_array($subParams)) {
                     $itemValue = $this->getPropertyValue($request, $type->getName(), $subParams);
